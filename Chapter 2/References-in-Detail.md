@@ -1,123 +1,138 @@
-# Go C++
-C++ basics improvement, object-oriented paradigm and advanced programming techniques, along with classic interview questions and practical problem-solving examples.
+# References in Detail
 
-Relevant code is on [Github](https://github.com/navining/gocpp). Please give me a star if you benifit from it!
+## References and Pointers
 
-:grinning: These notes are for：
-1. People who have already learned C and want to learn C++
-2. People who already know C++ and want to learn in depth
-3. People who are preparing for recruitment and want to crack the technical interviews (like me)
-4. People who want to use C++ in practical projects and want to know about common programming techniques
+A variable can be declared as reference with an *&* in the declaration. When a variable is declared as reference, it is an alias of an existing variable. Alias means that a variable and its reference can be regarded as the same thing.
 
-:slightly_frowning_face: These notes are not for:
-1. People who have no programming experience with C-style programming languages
-2. People who want to delve into the details of C++ standards
+```cpp
+int main() {
+    int a = 10;
+    int *p = &a;
+    int &b = a;
+    cout << b << endl;	// 10
+    return 0;
+}
+```
 
-**Have fun!**
+Declaring a pointer variable and a reference variable has the same underlying instructions. Both two approaches get the memory address of the existing variable and stores into the declared variable. Similarly, the assembly commands for modifying the value of a memory address through reference or through pointer dereference, are also the same.
 
-## Contents
+```cpp
+*p = 20;
+cout << a << " " << *p << " " << b << endl;	// 20 20 20
+b = 30;
+cout << a << " " << *p << " " << b << endl;	// 30 30 30
+```
 
-### **Chapter 1: What You Must Know First**
+Unlike pointer which can be declared without initialization or as a *nullptr*, a reference variable must be initialized with an existing variable when it is declared. In this way, a reference is safer than a pointer since it can't be NULL.
 
-- [Virtual Address Space of Process: Memory Partition and Layout](Chapter%201/Virtual-Address-Space-of-Process-Memory-Partition-and-Layout)
-- [Function Call: Stack Frame](Chapter%201/Function-Call-Stack-Frame)
-- [Program Compiling and Linking](Chapter%201/Program-Compiling-and-Linking)
+```cpp
+int &q;	// ERROR
+```
 
-### **Chapter 2: C++ Basics Improvement**
+Besides, these is no multi-level references as pointer does.
 
-- [Default Parameters](Chapter%202/Default-Parameters)
-- [Inline Function](Chapter%202/Inline-Function)
-- [Function Overloading](Chapter%202/Function-Overloading)
-- [`new` and `delete`](Chapter%202/New-and-Delete)
-- [`const` and Pointers](Chapter%202/Const-and-Pointers)
-- [References in Detail](Chapter%202/References-in-Detail)
+Reference plays an important role, especially as function parameters. In the following case, we write a *swap* function which takes two arguments and swap them. We can make this in using pointers as parameters and pass addresses of arguments inside, but reference makes it in a easier way.
 
-### **Chapter 3: Object-Oriented Principles**
+```cpp
+int swap(int &x, int &y) {
+    int temp = x;
+    x = y;
+    y = temp;
+}
 
-- [Class and Object](Chapter%203/Class-and-Object)
-- [Constructor and Destructor](Chapter%203/Constructor-and-Destructor)
-- [Shallow Copy and Deep Copy](Chapter%203/Shallow-Copy-and-Deep-Copy)
-- [Initializer List](Chapter%203/Initializer-List)
-- [Various Member Functions](Chapter%203/Various-Member-Functions)
-- [Pointer to Class Members](Chapter%203/Pointer-to-Class-Members)
+int main() {
+    int a = 10;
+    int b = 20;
+    swap(a, b);
+    cout << "a: " << a << "b: " << b << endl;
+}
+```
 
-### **Chapter 4: Template Programming**
+The way we declare reference to an array in kind tricky. We need to add brackets outside the reference variable, which states the priority, and then states the array size with square brackets. It is similar to declaring an array instead of declaring a pointer, since reference is the alias of another variable.
 
-- [Function Templates](Chapter%204/Function-Templates)
-- [Class Templates](Chapter%204/Class-Templates)
-- [Memory Allocators](Chapter%204/Memory-Allocators)
+```cpp
+int main() {
+    int array[5] = {};
+    int *p = array;
+    int (&q)[5] = array; 
+    
+    cout << sizeof(array) << endl;	// 20
+    cout << sizeof(p) << endl;	// 4
+    cout << sizeof(q) << endl;	// 20
+	return 0;
+}
+```
 
-### **Chapter 5: Operator Overloading**
+In the above case, the pointer has a size of 4 bytes, and reference has a size of 20 bytes, which is the same as the original array.
 
-- [Operator Overloading](Chapter%205/Operator-Overloading)
-- [Introduction to Iterators](Chapter%205/Introduction-to-Iterators)
-- [Issues of Iterator Invalidation](Chapter%205/Issues-of-Iterator-Invalidation)
-- [More about `new` and `delete`](Chapter%205/More-about-new-and-delete)
-- [Overloading of `new` and `delete`: Object Pool](Chapter%205/Overloading-of-new-and-delete-Object-Pool)
+## Rvalue References
 
-### **Chapter 6: Inheritance and Polymorphism**
+All the cases we've seen now is references of Lvalues. A Lvalue is a type of value that can appears at the left of operator `=`. It has a variable name and a memory address that can be modified. On the contrary, a Rvalue doesn't have a variable name nor a memory address. It can only appears at the right of operator `=`. We cannot declare a normal reference of a Rvalue.
 
-- [Look inside Inheritance](Chapter%206/Look-inside-Inheritance)
-- [More about Inheritance](Chapter%206/More-about-Inheritance)
-- [Virtual Functions, Static Binding and Dynamic Binding](Chapter%206/Virtual-Functions-Static-Binding-and-Dynamic-Binding)
-- [More about Virtual Functions](Chapter%206/More-about-Virtual-Functions)
-- [Understanding Polymorphism](Chapter%206/Understanding-Polymorphism)
-- [Abstract Classes](Chapter%206/Abstract-Classes)
-- [Frequently Asked Interview Questions: Polymorphism](Chapter%206/Frequently-Asked-Interview-Questions-Polymorphism)
+```cpp
+int main() {
+    int a = 10;	// a is a Lvalue
+    int &b = a;
+    int &c = 20;	// ERROR: 20 a Rvalue
+    return 0;
+}
+```
 
-### **Chapter 7: Multiple Inheritance**
+C++11 introduced many features, one of them is Rvalue references. With two *&* symbols, we can declare a reference of a constant. 
 
-- [Virtual Inheritance and Virtual Base Classes](Chapter%207/Virtual-Inheritance-and-Virtual-Base-Classes)
-- [Diamond Problem](Chapter%207/Diamond-Problem)
-- [Four Kinds of Type Conversions](Chapter%207/Four-Kinds-of-Type-Conversions)
+```cpp
+int &&c = 20;
+```
 
-### **Chapter 8: Standard Template Library**
+But how can we make a reference to a Rvalue since it doesn't have a memory address? The assembly commands shows the magic. When declaring a Rvalue reference, the compiler creates a temporary variable to store the value of the constant, and then assign the address of that temporary variable to the reference variable.
 
-- [Sequence Containers](Chapter%208/Sequence-Containers)
-- [Container Adapters](Chapter%208/Container-Adapters)
-- [Associative Containers](Chapter%208/Associative-Containers)
-- [More about Iterators](Chapter%208/More-about-Iterators)
-- [Function Objects](Chapter%208/Function-Objects)
-- [Generic Algorithms, Binders and Lambda Expressions](Chapter%208/Generic-Algorithms-Binders-and-Lambda-Expressions)
+```assembly
+mov	dword ptr [ebp-30h],14h
+lea	eax,[ebp-30h]
+mov dword ptr [c],eax
+```
 
-### **Chapter 9: Object Optimization**
+Alternatively, we can use `const` to declare a Rvalue reference as well.
 
-- [Behind the Object](Chapter%209/Behind-the-Object)
-- [Optimizing Objects in Functions](Chapter%209/Optimizing-Objects-in-Functions)
-- [Member Functions with Rvalue References](Chapter%209/Member-Functions-with-Rvalue-References)
-- [Move Semantics and Perfect Forwarding](Chapter%209/Move-Semantics-and-Perfect-Forwarding)
+```cpp
+const int &c = 20;
+```
 
-### **Chapter 10: Smart Pointers**
+Notice that a Rvalue reference is a Lvalue itself, which means that only Lvalue references can be used to refer to it.
 
-- [Smart Pointers](Chapter%2010/Smart-Pointers)
-- [Smart Pointers without Reference Counting](Chapter%2010/Smart-Pointers-without-Reference-Counting)
-- [Smart Pointers with Reference Counting](Chapter%2010/Smart-Pointers-with-Reference-Counting)
-- [Custom Deleters](Chapter%2010/Custom-Deleters)
+```cpp
+int &d = c;
+int &&e = c;	// ERROR
+```
 
-### **Chapter 11: Function Objects and Binders**
+## `const`, Pointers and References
 
-- [More about Binders](Chapter%2011/More-about-Binders)
-- [Introduction to *std::function*](Chapter%2011/Introduction-to-std-function)
-- [Template Specialization and Argument Deduction](Chapter%2011/Template-Specialization-and-Argument-Deduction)
-- [More about *std::function*](Chapter%2011/More-about-std-function)
-- [*std::bind()*: A Simple Thread Pool](Chapter%2011/std-bind()-A-Simple-Thread-Pool)
-- [More about Lambda Expressions](Chapter%2011/More-about-Lambda-Expressions)
+Now let's take a look at the following code. Is this code able to be complied or not?
 
-### **Chapter 12: Multithreading**
+```cpp
+int main() {
+    int a = 10;
+    int *p = &a;
+    const int *&q = p;
+    return 0;
+}
+```
 
-- [Important Features in C++ 11](Chapter%2012/Important-Features-in-C++11)
-- [Multithreaded Programming with *std::thread*](Chapter%2012/Multithreaded-Programming-with-std-thread)
-- [Mutual Exclusion](Chapter%2012/Mutual-Exclusion)
-- [Producer-Consumer Problem](Chapter%2012/Producer-Consumer-Problem)
-- [Atomic Operations](Chapter%2012/Atomic-Operations)
-- [Thread Visibility and `volatile`](Chapter%2012/Thread-Visibility-and-volatile)
+It seems confusing, but we can convert the reference to a pointer to make it clearer. Notice that `int &a = b` has the same function as `int *p = &b`, so the code above can be converted into follows:
 
-### **Chapter 13: Design Patterns**
+```cpp
+int a = 10;
+int *p = &a;
+const int **q = &p;	// ERROR
+```
 
-- [Singleton Pattern](Chapter%2013/Singleton-Pattern)
-- [Factory Pattern](Chapter%2013/Factory-Pattern)
-- [Proxy Pattern](Chapter%2013/Proxy-Pattern)
-- [Decorator Pattern](Chapter%2013/Decorator-Pattern)
-- [Adapter Pattern](Chapter%2013/Adapter-Pattern)
-- [Observer Pattern](Chapter%2013/Observer-Pattern)
+Now the problem is clear since we already discuss about `const` and double pointers. The code above actually convert a type of *int \*\** into *const int \*\**, which is invalid.
+
+> See the post "`const` and Pointers" if you forget it.
+
+
+
+
+
+
 
